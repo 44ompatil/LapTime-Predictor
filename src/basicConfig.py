@@ -19,14 +19,14 @@ class config:
 			print(f"ERROR : {e}")
 		return False
 	
-	def exportDatatoParquet(self, data : pd.DataFrame, parquetPath : Path = Path("./LapTime-Predictor")):
+	def exportDatatoParquet(self, data : pd.DataFrame, parquetPath : Path = Path(r"./data/raw/rawData.parquet")):
 		try:
 			table = pa.Table.from_pandas(data)
 			pq.write_table(table=table, where=parquetPath)
 		except Exception as e:
 			print(f"ERROR : {e}")
 	
-	def importDataFromParquet(self, parquetPath : Path = Path("./LapTime-Predictor")):
+	def importDataFromParquet(self, parquetPath : Path = Path("./data/raw/rawData.parquet")):
 		try:
 			table = pq.read_table(parquetPath)
 			return table.to_pandas() if table else None
