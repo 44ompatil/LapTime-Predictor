@@ -56,6 +56,8 @@ class dataLoader:
                 "Sector3Time",
                 "TyreLife",
                 "Compound",
+                "PitOutTime",
+                "PitInTime",
             ]
             laps = session.laps.copy()
             for col in cols:
