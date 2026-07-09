@@ -43,13 +43,17 @@ class FeatureEngineering:
         self.df['newStint?'] = self.df["TyreLife"] < self.df["PrevTyreLife"]
         self.df['StintID'] = groupBy['newStint?'].cumsum() + 1
         
-        self.df['Prev2LapTime'] = groupBy['LapTimeSeconds'].shift(2)
+        # self.df['Prev2LapTime'] = groupBy['LapTimeSeconds'].shift(2)
         self.df['Prev3LapTime'] = groupBy['LapTimeSeconds'].shift(3)
         
     
-        self.df['AvgPrev2'] = groupBy['LapTimeSeconds'].transform(lambda x: x.rolling(2).mean())
+        # self.df['AvgPrev2'] = groupBy['LapTimeSeconds'].transform(lambda x: x.rolling(2).mean())
         self.df['AvgPrev3'] = groupBy['LapTimeSeconds'].transform(lambda x: x.rolling(3).mean())
         self.df['StdPrev5'] = groupBy['LapTimeSeconds'].transform(lambda x: x.rolling(5).mean())
+
+        self.df['LapDelta'] = self.df['LapTimeSeconds'] - self.df['PrevLapTime']
+        self.df['AvgLast5'] = groupBy['PrevLapTime'].transform(lambda x: x.rolling(5).mean())
+        self.df['AvgLast10'] = groupBy['PrevLapTime'].transform(lambda x: x.rolling(10).mean())
 
   
         self.df.drop(self.df[self.df['Compound'] == 'None'].index, inplace=True)
@@ -63,14 +67,16 @@ class FeatureEngineering:
         
         self.df = pd.concat([self.df.drop(columns=['Compound']), EncCompound], axis=1)
 
-        os.makedirs(r"data\processed", exist_ok=True)
-        self.df.to_parquet(r"data\processed\featEngineeredData.parquet", index=False)
-        self.df.to_csv(r"data\processed\featEngineeredData.csv", index=False)
-        print("Feature engineered data saved.")
+        out_dir = r"data\processed"
+        os.makedirs(out_dir, exist_ok=True)
+        self.df.to_parquet(os.path.join(out_dir, "featEngineeredData.parquet"), index=False)
+        self.df.to_csv(os.path.join(out_dir, "featEngineeredData.csv"), index=False)
+        print(f"Feature engineered data saved.")
 
 
 if __name__ == "__main__":
     featEngg = FeatureEngineering()
-    featEngg.dataOverview()
-    featEngg.engineerFeatures()
+    if featEngg.df is not None:
+        featEngg.dataOverview()
+        featEngg.engineerFeatures()
     print("Feature Engineering completed successfully.")
