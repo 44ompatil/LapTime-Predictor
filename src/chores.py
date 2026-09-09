@@ -13,13 +13,15 @@ driverInitials = [
     'HAD',
     'GAS',
     'STR',
-    'CO L',
+    'COL',
     'TSU',
     'ALB',
     'VER',
     'ANT',
     'SAI']
 
+# Comment each year you want to exclude from the data collection.
+# If API limit reaches, use single year for collection of data. And repeat multipl timess.
 seasonYears = [
     2018,
     2019,

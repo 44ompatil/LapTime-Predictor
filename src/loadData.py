@@ -137,13 +137,9 @@ if __name__ == '__main__':
 
     combinedData = []
     for year in chores.seasonYears:
-        data = dl.loadData(year)
-        if data is not None and not data.empty:
-            combinedData.append(data)
-
-    if combinedData:
-        finalDF = pd.concat(combinedData, ignore_index=True)
-        cfg.exportDatatoParquet(finalDF,pathlib.Path(r'D:\Project\LapTime-Predictor\data\raw\rawData.parquet'))
-        finalDF.to_csv(r"D:\Project\LapTime-Predictor\data\raw\rawData.csv")
-    else:
-        print("No data was loaded.")
+        if combinedData:
+            finalDF = pd.concat(combinedData, ignore_index=True)
+            cfg.exportDatatoParquet(finalDF,pathlib.Path(r'/home/om/Projects/LapTime-Predictor/data/raw/rawData.parquet'))
+            finalDF.to_csv(r"/home/om/Projects/LapTime-Predictor/data/raw/rawData.csv", index=False)
+        else:
+            print("No data was loaded.")
