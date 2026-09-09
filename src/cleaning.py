@@ -5,7 +5,7 @@ import os
 class DataCleaning:
     def __init__(self):
         try:
-            self.df = pd.read_parquet(path=r"data\raw\rawData.parquet")
+            self.df = pd.read_parquet(path=r"/home/om/Projects/LapTime-Predictor/data/raw/rawData.parquet")
         except Exception as e:
             print(e)
 
@@ -54,9 +54,9 @@ class DataCleaning:
         self.df.drop_duplicates(inplace=True)
 
         #Save
-        os.makedirs(r"data\processed", exist_ok=True)
-        self.df.to_parquet(r"data\processed\cleanedData.parquet", index=False)
-        self.df.to_csv(r"data\processed\cleanedData.csv", index=False)
+        os.makedirs(r"/home/om/Projects/LapTime-Predictor/data/processed", exist_ok=True)
+        self.df.to_parquet(r"/home/om/Projects/LapTime-Predictor/data/processed/cleanedData.parquet", index=False)
+        self.df.to_csv(r"/home/om/Projects/LapTime-Predictor/data/processed/cleanedData.csv", index=False)
         print("Cleaned data saved.")
 
 

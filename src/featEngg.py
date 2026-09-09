@@ -1,4 +1,3 @@
-from IPython.core import display_functions
 import numpy as np
 import pandas as pd
 import os
@@ -7,7 +6,7 @@ from sklearn.preprocessing import OneHotEncoder
 class FeatureEngineering:
     def __init__(self):
         try:
-            self.df = pd.read_parquet(path=r"data\processed\cleanedData.parquet")
+            self.df = pd.read_parquet(path=r"/home/om/Projects/LapTime-Predictor/data/processed/cleanedData.parquet")
         except Exception as e:
             print(f"Error loading data: {e}")
             self.df = None
