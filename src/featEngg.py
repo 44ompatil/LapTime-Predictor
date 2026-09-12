@@ -41,18 +41,36 @@ class FeatureEngineering:
         self.df['PrevTyreLife'] = groupBy['TyreLife'].shift(1)
         self.df['newStint?'] = self.df["TyreLife"] < self.df["PrevTyreLife"]
         self.df['StintID'] = groupBy['newStint?'].cumsum() + 1
+        self.df['PrevSector1TimeSeconds'] = groupBy['Sector1TimeSeconds'].shift(1)
+        self.df['PrevSector2TimeSeconds'] = groupBy['Sector2TimeSeconds'].shift(1)
+        self.df['PrevSector3TimeSeconds'] = groupBy['Sector3TimeSeconds'].shift(1)
         
         # self.df['Prev2LapTime'] = groupBy['LapTimeSeconds'].shift(2)
         self.df['Prev3LapTime'] = groupBy['LapTimeSeconds'].shift(3)
+        self.df['PrevLapMedian3'] = groupBy['LapTimeSeconds'].transform(
+            lambda x: x.shift(1).rolling(3).median()
+        )
+        self.df['SessionBestLapBefore'] = groupBy['LapTimeSeconds'].transform(
+            lambda x: x.shift(1).expanding().min()
+        )
+        self.df['SessionBestSector1Before'] = groupBy['Sector1TimeSeconds'].transform(
+            lambda x: x.shift(1).expanding().min()
+        )
+        self.df['SessionBestSector2Before'] = groupBy['Sector2TimeSeconds'].transform(
+            lambda x: x.shift(1).expanding().min()
+        )
+        self.df['SessionBestSector3Before'] = groupBy['Sector3TimeSeconds'].transform(
+            lambda x: x.shift(1).expanding().min()
+        )
         
     
         # self.df['AvgPrev2'] = groupBy['LapTimeSeconds'].transform(lambda x: x.rolling(2).mean())
-        self.df['AvgPrev3'] = groupBy['LapTimeSeconds'].transform(lambda x: x.rolling(3).mean())
-        self.df['StdPrev5'] = groupBy['LapTimeSeconds'].transform(lambda x: x.rolling(5).mean())
+        self.df['AvgPrev3'] = groupBy['LapTimeSeconds'].transform(lambda x: x.shift(1).rolling(3).mean())
+        self.df['StdPrev5'] = groupBy['LapTimeSeconds'].transform(lambda x: x.shift(1).rolling(5).std())
 
-        self.df['LapDelta'] = self.df['LapTimeSeconds'] - self.df['PrevLapTime']
-        self.df['AvgLast5'] = groupBy['PrevLapTime'].transform(lambda x: x.rolling(5).mean())
-        self.df['AvgLast10'] = groupBy['PrevLapTime'].transform(lambda x: x.rolling(10).mean())
+        self.df['LapDelta'] = self.df['PrevLapTime'] - self.df['Prev3LapTime']
+        self.df['AvgLast5'] = groupBy['PrevLapTime'].transform(lambda x: x.shift(1).rolling(5).mean())
+        self.df['AvgLast10'] = groupBy['PrevLapTime'].transform(lambda x: x.shift(1).rolling(10).mean())
 
   
         self.df.drop(self.df[self.df['Compound'] == 'None'].index, inplace=True)
@@ -66,7 +84,7 @@ class FeatureEngineering:
         
         self.df = pd.concat([self.df.drop(columns=['Compound']), EncCompound], axis=1)
 
-        out_dir = r"data\processed"
+        out_dir = os.path.join("data", "processed")
         os.makedirs(out_dir, exist_ok=True)
         self.df.to_parquet(os.path.join(out_dir, "featEngineeredData.parquet"), index=False)
         self.df.to_csv(os.path.join(out_dir, "featEngineeredData.csv"), index=False)
